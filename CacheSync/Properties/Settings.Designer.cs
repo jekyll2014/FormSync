@@ -50,24 +50,24 @@ namespace FormSync.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("*.jsonc")]
-        public string TrackFiles {
+        public string TrackFileMask {
             get {
-                return ((string)(this["TrackFiles"]));
+                return ((string)(this["TrackFileMask"]));
             }
             set {
-                this["TrackFiles"] = value;
+                this["TrackFileMask"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("*.json;*.txt")]
-        public string ClearFiles {
+        public string ClearFileMaskList {
             get {
-                return ((string)(this["ClearFiles"]));
+                return ((string)(this["ClearFileMaskList"]));
             }
             set {
-                this["ClearFiles"] = value;
+                this["ClearFileMaskList"] = value;
             }
         }
         

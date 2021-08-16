@@ -11,9 +11,9 @@ namespace FormSync
         private string _formFolder = "";
         private string _cacheFolder = "";
         private string _deployFolder = "";
-        readonly private string _trackFiles;
-        readonly private string[] _clearFiles;
-        readonly private string _cacheFolderName;
+        private readonly string _trackFiles;
+        private readonly string[] _clearFiles;
+        private readonly string _cacheFolderName;
         private FileSystemWatcher _watcher;
 
         public Form1()
@@ -22,8 +22,8 @@ namespace FormSync
             textBox_formFolder.Text = _formFolder = Settings.Default.FormFolder;
             textBox_deployFolder.Text = _deployFolder = Settings.Default.DeployFolder;
             textBox_cacheFolder.Text = _cacheFolder = Settings.Default.CacheFolder;
-            _trackFiles = Settings.Default.TrackFiles;
-            _clearFiles = Settings.Default.ClearFiles.Split(';', StringSplitOptions.RemoveEmptyEntries);
+            _trackFiles = Settings.Default.TrackFileMask;
+            _clearFiles = Settings.Default.ClearFileMaskList.Split(';', StringSplitOptions.RemoveEmptyEntries);
             _cacheFolderName = Settings.Default.CacheFolderName;
             CheckAllDirectoryExists();
         }
@@ -64,9 +64,8 @@ namespace FormSync
             WatcherStart(en);
             button_formFolder.Enabled = !en;
             button_deployFolder.Enabled = !en;
-            textBox_formFolder.Enabled = !en;
-            textBox_deployFolder.Enabled = !en;
-            textBox_cacheFolder.Enabled = !en;
+            textBox_formFolder.ReadOnly = en;
+            textBox_deployFolder.ReadOnly = en;
         }
 
         private bool WatcherStart(bool en)
@@ -85,23 +84,22 @@ namespace FormSync
             notifyIcon1.Text = "Active";
             try
             {
-                _watcher = new FileSystemWatcher(_formFolder);
-
-                _watcher.NotifyFilter = NotifyFilters.DirectoryName
+                _watcher = new FileSystemWatcher(_formFolder) {
+                    NotifyFilter = NotifyFilters.DirectoryName
                                         | NotifyFilters.FileName
                                         | NotifyFilters.LastWrite
-                                        | NotifyFilters.Size;
+                                        | NotifyFilters.Size,
+                    Filter = _trackFiles,
+                    IncludeSubdirectories = true,
+                    EnableRaisingEvents = true,
+                    InternalBufferSize = 102400
+                };
 
                 _watcher.Changed += SyncCode;
                 _watcher.Created += SyncCode;
                 _watcher.Deleted += SyncCode;
                 _watcher.Renamed += SyncCode;
                 _watcher.Error += WatcherError;
-                _watcher.InternalBufferSize *= 10;
-
-                _watcher.Filter = _trackFiles;
-                _watcher.IncludeSubdirectories = true;
-                _watcher.EnableRaisingEvents = true;
             }
             catch (Exception ex)
             {
